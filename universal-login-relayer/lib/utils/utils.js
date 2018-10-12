@@ -79,4 +79,4 @@ const getKeyFromData = (data) => {
   return utils.hexlify(utils.stripZeros(address));
 };
 
-export {addressToBytes32, waitForContractDeploy, messageSignature, messageSignatureForApprovals, withENS, lookupAddress, hasEnoughToken, isAddKeyCall, getKeyFromData};
+export {addressToBytes32, waitForContractDeploy, messageSignature, messageSignatureForApprovals, withENS, lookupAddress, hasEnoughToken, isAddKeyCall, getKeyFromData, sleep};

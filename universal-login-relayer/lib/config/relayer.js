@@ -1,7 +1,7 @@
 const {defaultAccounts} = require('ethereum-waffle');
 
 module.exports = Object.freeze({
-  jsonRpcUrl: 'http://localhost:18545',
+  jsonRpcUrl: process.env.JSON_RPC_URL,
   port: 3311,
   privateKey: defaultAccounts[0].secretKey,
   chainSpec: {
@@ -9,20 +9,20 @@ module.exports = Object.freeze({
     chainId: 0
   },
   ensRegistrars: {
-    'mylogin.eth': {
-      resolverAddress: process.env.ENS_RESOLVER1_ADDRESS,
-      registrarAddress: process.env.ENS_REGISTRAR1_ADDRESS,
-      privteKey: process.env.ENS_REGISTRAR1_PRIVATE_KEY
+    [process.env.ENS_DOMAIN_1]: {
+      resolverAddress: process.env.ENS_RESOLVER_1_ADDRESS,
+      registrarAddress: process.env.ENS_REGISTRAR_1_ADDRESS,
+      privteKey: process.env.ENS_REGISTRAR_1_PRIVATE_KEY
     },
-    'universal-id.eth': {
-      resolverAddress: process.env.ENS_RESOLVER2_ADDRESS,
-      registrarAddress: process.env.ENS_REGISTRAR2_ADDRESS,
-      privteKey: process.env.ENS_REGISTRAR2_PRIVATE_KEY
+    [process.env.ENS_DOMAIN_2]: {
+      resolverAddress: process.env.ENS_RESOLVER_2_ADDRESS,
+      registrarAddress: process.env.ENS_REGISTRAR_2_ADDRESS,
+      privteKey: process.env.ENS_REGISTRAR_2_PRIVATE_KEY
     },
-    'popularapp.eth': {
-      resolverAddress: process.env.ENS_RESOLVER3_ADDRESS,
-      registrarAddress: process.env.ENS_REGISTRAR3_ADDRESS,
-      privteKey: process.env.ENS_REGISTRAR3_PRIVATE_KEY
+    [process.env.ENS_DOMAIN_3]: {
+      resolverAddress: process.env.ENS_RESOLVER_3_ADDRESS,
+      registrarAddress: process.env.ENS_REGISTRAR_3_ADDRESS,
+      privteKey: process.env.ENS_REGISTRAR_3_PRIVATE_KEY
     }
   }
 });
