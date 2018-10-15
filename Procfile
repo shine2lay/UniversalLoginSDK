@@ -1,1 +1,0 @@
-web: cd universal-login-relayer && yarn relayer:start
