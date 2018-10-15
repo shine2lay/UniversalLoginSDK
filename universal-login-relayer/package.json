@@ -23,7 +23,7 @@
         "ens:deploy": "babel-node scripts/deployENS.js",
         "clean": "rm -fr ./node_modules && rm -fr ./build",
         "postinstall": "yarn build",
-        "start": "node lib/relayer.js"
+        "start": "node dist/index.js"
     },
     "engines": {
       "node": "10.9",
