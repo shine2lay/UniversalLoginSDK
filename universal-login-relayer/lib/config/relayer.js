@@ -1,9 +1,7 @@
-const {defaultAccounts} = require('ethereum-waffle');
-
 module.exports = Object.freeze({
   jsonRpcUrl: process.env.JSON_RPC_URL,
   port: 3311,
-  privateKey: defaultAccounts[0].secretKey,
+  privateKey: process.env.PRIVATE_KEY,
   chainSpec: {
     ensAddress: process.env.ENS_ADDRESS,
     chainId: 0
