@@ -21,7 +21,12 @@
         "relayer:start": "babel-node scripts/relayer.js",
         "ganache:start": "babel-node scripts/ganache.js",
         "ens:deploy": "babel-node scripts/deployENS.js",
-        "clean": "rm -fr ./node_modules && rm -fr ./build"
+        "clean": "rm -fr ./node_modules && rm -fr ./build",
+        "postinstall": "yarn build"
+    },
+    "engines": {
+      "node": "10.9",
+      "yarn": "1.9"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",
