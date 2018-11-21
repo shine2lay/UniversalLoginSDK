@@ -4,7 +4,7 @@ import "./KeyHolder.sol";
 import "openzeppelin-solidity/contracts/ECRecovery.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
-
+import "./GeneralAuthorization/AuthorizationInterface.sol";
 
 contract SignedApprovalScheme is KeyHolder {
     using ECRecovery for bytes32;
@@ -27,6 +27,8 @@ contract SignedApprovalScheme is KeyHolder {
         address gasToken;
         uint gasPrice;
         uint gasLimit;
+        address authorizationContract;
+        bytes authorizationData;
     }
 
     constructor(bytes32 _key) KeyHolder(_key) public {
@@ -63,6 +65,15 @@ contract SignedApprovalScheme is KeyHolder {
         return bytes32(messageHash.toEthSignedMessageHash().recover(_messageSignature));
     }
 
+    function extractAuthorizationContractFromExtraData(bytes extraData) public pure returns (address authorizationContract) {
+        assembly {
+            authorizationContract := mload(add(extraData, 32)) // first 32 bytes are data padding
+        }
+    }
+
+
+    // @dev extraData field must in the following format
+    // 0 - 20 authorization Contract address
     function executeSigned(
         address _to, uint256 _value, bytes _data, uint256 _nonce, address _gasToken, uint _gasPrice, uint _gasLimit, bytes extraData, bytes _messageSignature
         )
@@ -73,7 +84,7 @@ contract SignedApprovalScheme is KeyHolder {
         bytes32 signer = getSignerForExecutions(_to, address(this), _value, _data, _nonce, _gasToken, _gasPrice, _gasLimit, extraData, _messageSignature);
         require(_to != address(this) || keyHasPurpose(signer, MANAGEMENT_KEY), "Management key required for actions on identity");
 
-        return addSignedExecution(_to, _value, _data, _nonce, _gasToken, _gasPrice, _gasLimit);
+        return addSignedExecution(_to, _value, _data, _nonce, _gasToken, _gasPrice, _gasLimit, extractAuthorizationContractFromExtraData(extraData));
     }
 
     function approveSigned(uint256 _id, bytes _messageSignature)
@@ -90,9 +101,18 @@ contract SignedApprovalScheme is KeyHolder {
         return attemptExecution(_id);
     }
 
-    function addSignedExecution(address _to, uint256 _value, bytes _data, uint256 _nonce, address _gasToken, uint _gasPrice, uint _gasLimit)
-        private
-        returns(uint256 executionId)
+    function addSignedExecution(
+        address _to,
+        uint256 _value,
+        bytes _data,
+        uint256 _nonce,
+        address _gasToken,
+        uint _gasPrice,
+        uint _gasLimit,
+        address _authorizationContract
+    )
+        private 
+        returns(uint256 executionId) 
     {
         require(_to != address(0), "Invalid 'to' address");
         require(executionNonce == _nonce, "Invalid execution nonce");
@@ -104,6 +124,7 @@ contract SignedApprovalScheme is KeyHolder {
         executions[executionNonce].gasToken = _gasToken;
         executions[executionNonce].gasPrice = _gasPrice;
         executions[executionNonce].gasLimit = _gasLimit;
+        executions[executionNonce].authorizationContract = _authorizationContract;
 
         emit ExecutionRequested(executionNonce, _to, _value, _data);
 
@@ -113,7 +134,10 @@ contract SignedApprovalScheme is KeyHolder {
     }
 
     function attemptExecution(uint256 executionNonce) private returns(bool success) {
-        if (executions[executionNonce].approvals.length == requiredApprovals) {
+        Execution storage exec = executions[executionNonce];
+//        AuthorizationInterface auth = AuthorizationInterface(exec.authorizationContract);
+
+        if (exec.approvals.length == requiredApprovals) {
             return doExecute(executionNonce);
         }
         return false;
