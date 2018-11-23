@@ -135,7 +135,7 @@ contract SignedApprovalScheme is KeyHolder {
 
     function attemptExecution(uint256 executionNonce) private returns(bool success) {
         Execution storage exec = executions[executionNonce];
-//        AuthorizationInterface auth = AuthorizationInterface(exec.authorizationContract);
+        AuthorizationInterface auth = AuthorizationInterface(exec.authorizationContract);
 
         if (exec.approvals.length == requiredApprovals) {
             return doExecute(executionNonce);
